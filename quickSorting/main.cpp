@@ -116,19 +116,19 @@ TEST_F(QuickSorting, ArrayWithDuplicates) {
 
 // Very long array with random values
 TEST_F(QuickSorting, LongRandomArray) {
-  int source[10000];
-  for (int i = 0; i < 10000; i++) {
+  int source[100000];
+  for (int i = 0; i < 100000; i++) {
     source[i] = rand()%100;
   }
 
-  int etalon[10000];
+  int etalon[100000];
 
   std::copy(std::begin(source), std::end(source), std::begin(etalon));
-  std::sort(etalon, etalon + 10000);
+  std::sort(etalon, etalon + 100000);
 
-  int *algo_sorted = quickSortedArray(source, 10000);
+  int *algo_sorted = quickSortedArray(source, 100000);
 
-  for (int k = 0; k < 10000; k++) {
+  for (int k = 0; k < 100000; k++) {
     EXPECT_EQ(algo_sorted[k], etalon[k]) << "Arrays sorted and etalon differ at index " << k;
   }
 }
