@@ -49,22 +49,7 @@ int * quickSortedArray(int arr[], int n) {
   return arr;
 }
 
-// int testArr1[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-// int testArr2[5] = {5, 4, 1, 2, 3};
-// int testArr3[1] = {7};
-// int testArr4[22] = {1, 1, 1, 1, 2, 3, 4, 5, 1, 1, 1, 2, 2,
-//   2, 3, 3, 4, 5, 3, 3, 3, 2};
-// int *testArr5 = randomLongArray();
-// int testArr6[10] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-// int testArr7[0] = {};
 
-// int *sortedArr1 = quickSortedArray(testArr1, 10);
-// int *sortedArr2 = quickSortedArray(testArr2, 5);
-// int *sortedArr3 = quickSortedArray(testArr3, 1);
-// int *sortedArr4 = quickSortedArray(testArr4, 22);
-// int *sortedArr5 = quickSortedArray(testArr5, 10);
-// int *sortedArr6 = quickSortedArray(testArr6, 10);
-// int *sortedArr7 = quickSortedArray(testArr7, 0);
 
 struct QuickSorting : public Test {};
 
