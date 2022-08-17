@@ -1,4 +1,6 @@
 #include <iostream>
+#include <exception>
+#include <stdexcept>
 
 #define MAX_SIZE 1000
 
@@ -19,7 +21,7 @@ class STACK {
 
   void push(T item) {
     if (top >= MAX_SIZE) { // putting on an overflowing stack
-      cout << "push() did not called. Stack is overflowed!";
+      throw length_error("push(): overflowed stack");
     } else {
       stack[top] = item;
       top++;
@@ -28,8 +30,7 @@ class STACK {
 
   T pop() {
     if (top == 0) { // exclude from empty stack
-      cout << "Can not call pop() for the stack. The stack is empty!";
-      return 0;
+      throw length_error("pop(): empty stack");
     } else {
       top--;
       T item = stack[top];
@@ -39,8 +40,7 @@ class STACK {
 
   T peak() { // find top value without exclusion
     if (top == 0) {
-      cout << "Stack is empty!";
-      return 0;
+      throw length_error("peak(): empty stack");
     } else {
       int peakValue = stack[top - 1];
       return peakValue;
@@ -57,6 +57,47 @@ class STACK {
 
   int size() {
     return top;
+  }
+
+  // copy constructor STACK(const STACK&)
+  STACK(const STACK& copy) {
+    try {
+      // 1. New memory cell for stack array
+      stack = new T[copy.count];
+
+      // 2. Copy data from st
+      top = copy.top;
+      for (int i = 0; i < top; i++)
+        stack[i] = copy.stack[i];
+    } catch (bad_alloc e) {
+      // if memory cell doesn't allocated
+      cout << e.what() << endl;
+    }
+  }
+
+  // assignment operator function
+  STACK operator=(const STACK& st) {
+    // 1. Empty memory
+    if (top > 0) {
+      top = 0;
+      delete[] stack;
+    }
+
+    // 2. Allocate memory for array stack
+    try {
+      stack = new T[st.top];
+
+      // 3. Copy data from st
+      top = st.top;
+      for (int i = 0; i < top; i++) {
+        stack[i] = st.stack[i];
+      }
+    } catch (bad_alloc e) {
+      top << e.what() << endl;
+    }
+
+    // 4. Return current object
+    return *this;
   }
 
   ~STACK() {
