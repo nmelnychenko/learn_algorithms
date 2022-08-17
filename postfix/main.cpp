@@ -23,7 +23,7 @@ int priority (char ch) {
 string infixToPostfix(string expression) {
   int i = 0;
   string result = "";
-  STACK <int> stack;
+  STACK <char> stack;
 
   for (int i = 0; i < expression.length(); i++) {
     char ch = expression[i];
@@ -41,8 +41,7 @@ string infixToPostfix(string expression) {
     // 2.2. If character is closing paranthes `)` -> pop() to output string untild find `(` in stack
     else if (ch == ')') {
       while (stack.peak() != '(') {
-        result += stack.peak();
-        stack.pop();
+        result += stack.pop();
       }
 
       stack.pop();
@@ -52,8 +51,7 @@ string infixToPostfix(string expression) {
     else {
       // check if character operator has higher priority that in stack
       while (!stack.is_empty() && priority(ch) <= priority(stack.peak())) {
-        result += stack.peak();
-        char tmp = stack.pop();
+        result += stack.pop();
       }
       stack.push(ch);
     }
@@ -61,12 +59,46 @@ string infixToPostfix(string expression) {
 
   // 4. Exclude all remaining element from stack
   while (!stack.is_empty()) {
-    result += stack.peak();
-    stack.pop();
+    result += stack.pop();
   }
 
   return result;
 }
+
+
+float calculatePostfix(string postfix) {
+  int a, b;
+  STACK <float> stack; // stack would have only calculated and postponed values
+
+  for(int i = 0; i < postfix.length(); i++) {
+    char ch = postfix[i];
+    if (ch >= '0' && ch <= '9') {
+      stack.push(postfix[i] - '0'); // return float from char
+    }
+
+    // if symbol is an operator then pop top 2 elements from stack,
+    // perform specific operation and push the result back into stack
+    else {
+      b = stack.pop();
+      a = stack.pop();
+
+      if (postfix[i] == '+') {
+        stack.push(a + b);
+      } else if (postfix[i] == '-') {
+        stack.push(a - b);
+      } else if (postfix[i] == '*') {
+        stack.push(a * b);
+      } else if (postfix[i] == '/') {
+        stack.push(a / b);
+      } else if (postfix[i] == '^') {
+        stack.push(pow(a, b));
+      }
+    }
+  }
+
+  return stack.pop();
+}
+
 
 struct InfixPostfix : public Test {};
 
@@ -75,8 +107,10 @@ TEST_F(InfixPostfix, Single) {
   string infix = "1+2";
   string expected = "12+";
   string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
 
   EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 3);
 }
 
 // Two different priority operations
@@ -84,22 +118,53 @@ TEST_F(InfixPostfix, TwoDiffPriority) {
   string infix = "1+2*3";
   string expected = "123*+";
   string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
 
   EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 7);
 }
 
 // With parantheses
 TEST_F(InfixPostfix, TwoWithParantheses) {
   string infix = "(1+2)*3";
   string expected = "12+3*";
+  string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
 
-  EXPECT_EQ(infixToPostfix(infix), expected);
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 9);
 }
 
 // Long expression
 TEST_F(InfixPostfix, Long) {
   string infix = "5+3*4-6/(2+1)";
   string expected = "534*+621+/-";
+  string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
 
-  EXPECT_EQ(infixToPostfix(infix), expected);
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 15);
 }
+
+// single pow
+TEST_F(InfixPostfix, SinglePow) {
+  string infix = "2^3";
+  string expected = "23^";
+  string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
+
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 8);
+}
+
+// long expression with pow operation
+TEST_F(InfixPostfix, LongWithPow) {
+  string infix = "4*((2+3)*2)^2+5*(2^3+2)";
+  string expected = "423+2*2^*523^2+*+";
+  string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
+
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 450);
+}
+
