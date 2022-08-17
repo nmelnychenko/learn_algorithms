@@ -1,4 +1,5 @@
 #include <gmock/gmock.h>
+#include <stdexcept>
 #include "stack.h"
 
 using namespace testing;
@@ -30,7 +31,7 @@ TEST_F(Stack, size) {
   EXPECT_EQ(size, 2);
 
   // overflow stack, MAX = 1000
-  for (int i = 0; i < 1000; i++) { // MAX size of stack is defined inside STACK class
+  for (int i = 2; i < 1000; i++) { // MAX size of stack is defined inside STACK class
     int val = rand() % 1000;
     testStack.push(val);
   }
@@ -42,7 +43,7 @@ TEST_F(Stack, size) {
   EXPECT_EQ(size, 1000);
 
   // push to full stack should not change stack
-  testStack.push(testValue);
+  EXPECT_THROW(testStack.push(testValue), std::length_error);
   // update size
   size = testStack.size();
 
@@ -84,7 +85,7 @@ TEST_F(Stack, isFull) {
   EXPECT_FALSE(testStack.is_full());
 
   // overflow stack, MAX = 1000
-  for (int i = 0; i < 1000; i++) { // MAX size of stack is defined inside STACK class
+  for (int i = 1; i < 1000; i++) { // MAX size of stack is defined inside STACK class
     int val = rand() % 1000;
     testStack.push(val);
   }
@@ -129,7 +130,7 @@ TEST_F(Stack, pushToFull) {
   EXPECT_EQ(testStack.size(), 1000);
 
   // Trying push to full size stack
-  testStack.push(testValue);
+  EXPECT_THROW(testStack.push(testValue), std::length_error);
 
   // Expect that stack is not changed
   // Test that stack is full
@@ -148,7 +149,7 @@ TEST_F(Stack, popFromEmpty) {
   // Test that stack is empty
   EXPECT_TRUE(testStack.is_empty());
 
-  testStack.pop();
+  EXPECT_THROW(testStack.pop(), std::length_error);
 
   // Test that stack still empty
   EXPECT_EQ(testStack.size(), 0);
@@ -217,9 +218,30 @@ TEST_F(Stack, peak) {
   int pop1 = testStack.pop();
   int pop2 = testStack.pop();
 
-  // update peakValue
-  peakValue = testStack.peak();
+  // should throw error for empty stack
+  EXPECT_THROW(testStack.peak(), std::length_error);
+}
 
-  // should return default 0 for empty stack
-  EXPECT_EQ(peakValue, 0);
+
+
+// Test LIFO principle
+TEST_F(Stack, LIFO) {
+  STACK <int> testStack;
+  int insertArr[7] = {1, 2, 3, 4, 5, 6, 7};
+  int outputArr[7];
+  int expectedArr[7] = {7, 6, 5, 4, 3, 2, 1};
+
+  for (int i = 0; i < 7; i++) {
+    testStack.push(insertArr[i]);
+
+    // Test that element added to stack
+    EXPECT_EQ(testStack.peak(), insertArr[i]);
+  }
+
+  for (int i = 0; i < 7; i++) {
+    outputArr[i] = testStack.pop();
+  }
+
+  // Compare result after pop all stack and expected arrays
+  EXPECT_THAT(outputArr, ElementsAreArray(expectedArr));
 }
