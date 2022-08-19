@@ -1,4 +1,5 @@
 #include <iostream>
+#include <exception>
 #include <gmock/gmock.h>
 #include "../stack/stack.h"
 
@@ -50,7 +51,7 @@ string infixToPostfix(string expression) {
     // 3. If character is operator
     else {
       // check if character operator has higher priority that in stack
-      while (!stack.is_empty() && priority(ch) <= priority(stack.peak())) {
+      while (!stack.is_empty() && priority(ch) < priority(stack.peak())) {
         result += stack.pop();
       }
       stack.push(ch);
@@ -67,7 +68,7 @@ string infixToPostfix(string expression) {
 
 
 float calculatePostfix(string postfix) {
-  int a, b;
+  float a, b;
   STACK <float> stack; // stack would have only calculated and postponed values
 
   for(int i = 0; i < postfix.length(); i++) {
@@ -82,16 +83,24 @@ float calculatePostfix(string postfix) {
       b = stack.pop();
       a = stack.pop();
 
-      if (postfix[i] == '+') {
-        stack.push(a + b);
-      } else if (postfix[i] == '-') {
-        stack.push(a - b);
-      } else if (postfix[i] == '*') {
-        stack.push(a * b);
-      } else if (postfix[i] == '/') {
-        stack.push(a / b);
-      } else if (postfix[i] == '^') {
-        stack.push(pow(a, b));
+      switch(postfix[i]) {
+        case '+':
+          stack.push(a + b);
+          break;
+        case '-':
+          stack.push(a - b);
+          break;
+        case '*':
+          stack.push(a * b);
+          break;
+        case '/':
+          stack.push(a / b);
+          break;
+        case '^':
+          stack.push(pow(a, b));
+          break;
+        default:
+          throw invalid_argument("unhandled symbol");
       }
     }
   }
@@ -138,7 +147,7 @@ TEST_F(InfixPostfix, TwoWithParantheses) {
 // Long expression
 TEST_F(InfixPostfix, Long) {
   string infix = "5+3*4-6/(2+1)";
-  string expected = "534*+621+/-";
+  string expected = "534*621+/-+";
   string result = infixToPostfix(infix);
   float evaluatePostfix = calculatePostfix(result);
 
@@ -168,3 +177,13 @@ TEST_F(InfixPostfix, LongWithPow) {
   EXPECT_EQ(evaluatePostfix, 450);
 }
 
+// nested pow operation
+TEST_F(InfixPostfix, NestedPow) {
+  string infix = "4^3^2";
+  string expected = "432^^";
+  string result = infixToPostfix(infix);
+  float evaluatePostfix = calculatePostfix(result);
+
+  EXPECT_EQ(result, expected);
+  EXPECT_EQ(evaluatePostfix, 262144);
+}

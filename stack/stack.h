@@ -85,7 +85,7 @@ class STACK {
     if(this != &st) {
       // 1. Deallocate old memory
       top = 0;
-      delete [] ptr;
+      delete[] stack;
 
       // 2. Allocate memory for array stack
       try {
