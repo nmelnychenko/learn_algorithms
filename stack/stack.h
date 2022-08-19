@@ -61,9 +61,13 @@ class STACK {
 
   // copy constructor STACK(const STACK&)
   STACK(const STACK& copy) {
+    // 0. Initialize fields
+    stack = nullptr;
+    top = 0;
+
     try {
       // 1. New memory cell for stack array
-      stack = new T[copy.count];
+      stack = new T[copy.top];
 
       // 2. Copy data from st
       top = copy.top;
@@ -76,24 +80,25 @@ class STACK {
   }
 
   // assignment operator function
-  STACK operator=(const STACK& st) {
-    // 1. Empty memory
-    if (top > 0) {
+  STACK operator=(const STACK &st) {
+    /* SELF ASSIGNMENT CHECK */
+    if(this != &st) {
+      // 1. Deallocate old memory
       top = 0;
       delete[] stack;
-    }
 
-    // 2. Allocate memory for array stack
-    try {
-      stack = new T[st.top];
+      // 2. Allocate memory for array stack
+      try {
+        stack = new T[st.top];
 
-      // 3. Copy data from st
-      top = st.top;
-      for (int i = 0; i < top; i++) {
-        stack[i] = st.stack[i];
+        // 3. Copy data from st
+        top = st.top;
+        for (int i = 0; i < top; i++) {
+          stack[i] = st.stack[i];
+        }
+      } catch (bad_alloc e) {
+        cout << e.what() << endl;
       }
-    } catch (bad_alloc e) {
-      top << e.what() << endl;
     }
 
     // 4. Return current object
